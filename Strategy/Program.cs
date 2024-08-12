@@ -70,6 +70,7 @@ public class PaymentProcessor
 /// STRATEGY PATTERN
 ///     1. Si existe un proceso prestablecido
 ///     2. Se pone complejo el codigo a medida que crece
+///     3. Existe varias formas de hacer lo mismo o hacer algo con el mismo objetivo pero destinta forma
 ///
 /// </summary>
 
