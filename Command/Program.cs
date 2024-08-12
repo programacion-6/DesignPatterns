@@ -1,4 +1,5 @@
-﻿namespace Command;
+﻿namespace Command
+{
 
 /// <summary>
 /// Command
@@ -189,19 +190,296 @@ public class Light
     }
 }
 
+public class FanOnCommand : ICommand
+{
+    private readonly Fan _fan;
+
+    public FanOnCommand(Fan fan)
+    {
+        _fan = fan;
+    }
+
+    public void Execute()
+    {
+        _fan.On();
+    }
+
+    public void Undo()
+    {
+        _fan.Off();
+    }
+}
+
+public class FanOffCommand : ICommand
+{
+    private readonly Fan _fan;
+
+    public FanOffCommand(Fan fan)
+    {
+        _fan = fan;
+    }
+
+    public void Execute()
+    {
+        _fan.Off();
+    }
+
+    public void Undo()
+    {
+        _fan.On();
+    }
+}
+
 public class Fan
 {
-    // On
-    // Off
+    public void On()
+    {
+        Console.WriteLine("The fan is on");
+    }
+
+    public void Off()
+    {
+        Console.WriteLine("The fan is off");
+    }
+}
+
+
+public class GarageDoorOpenCommand : ICommand
+{
+    private readonly GarageDoor _garageDoor;
+
+    public GarageDoorOpenCommand(GarageDoor garageDoor)
+    {
+        _garageDoor = garageDoor;
+    }
+
+    public void Execute()
+    {
+        _garageDoor.Open();
+    }
+
+    public void Undo()
+    {
+        _garageDoor.Close();
+    }
+}
+
+public class GarageDoorCloseCommand : ICommand
+{
+    private readonly GarageDoor _garageDoor;
+
+    public GarageDoorCloseCommand(GarageDoor garageDoor)
+    {
+        _garageDoor = garageDoor;
+    }
+
+    public void Execute()
+    {
+        _garageDoor.Close();
+    }
+
+    public void Undo()
+    {
+        _garageDoor.Open();
+    }
 }
 
 public class GarageDoor
 {
-    // Open
-    // Close
+    public void Open()
+    {
+        Console.WriteLine("The garage door is open");
+    }
+
+    public void Close()
+    {
+        Console.WriteLine("The garage door is closed");
+    }
 }
 
 // OTRO APARATO QUE IMPLEMENTE ICommand
+
+public class AudioSystemOnCommand : ICommand
+{
+    private readonly AudioSystem _audioSystem;
+
+    public AudioSystemOnCommand(AudioSystem audioSystem)
+    {
+        _audioSystem = audioSystem;
+    }
+
+    public void Execute()
+    {
+        _audioSystem.On();
+    }
+
+    public void Undo()
+    {
+        _audioSystem.Off();
+    }
+}
+
+public class AudioSystemOffCommand : ICommand
+{
+    private readonly AudioSystem _audioSystem;
+
+    public AudioSystemOffCommand(AudioSystem audioSystem)
+    {
+        _audioSystem = audioSystem;
+    }
+
+    public void Execute()
+    {
+        _audioSystem.Off();
+    }
+
+    public void Undo()
+    {
+        _audioSystem.On();
+    }
+}
+
+public class AudioSystemVolumeUpCommand : ICommand
+{
+    private readonly AudioSystem _audioSystem;
+
+    public AudioSystemVolumeUpCommand(AudioSystem audioSystem)
+    {
+        _audioSystem = audioSystem;
+    }
+
+    public void Execute()
+    {
+        _audioSystem.VolumeUp();
+    }
+
+    public void Undo()
+    {
+        _audioSystem.VolumeDown();
+    }
+}
+
+public class AudioSystemVolumeDownCommand : ICommand
+{
+    private readonly AudioSystem _audioSystem;
+
+    public AudioSystemVolumeDownCommand(AudioSystem audioSystem)
+    {
+        _audioSystem = audioSystem;
+    }
+
+    public void Execute()
+    {
+        _audioSystem.VolumeDown();
+    }
+
+    public void Undo()
+    {
+        _audioSystem.VolumeUp();
+    }
+}
+
+public class AudioSystemNextTrackCommand : ICommand
+{
+    private readonly AudioSystem _audioSystem;
+
+    public AudioSystemNextTrackCommand(AudioSystem audioSystem)
+    {
+        _audioSystem = audioSystem;
+    }
+
+    public void Execute()
+    {
+        _audioSystem.NextTrack();
+    }
+
+    public void Undo()
+    {
+        _audioSystem.PreviousTrack();
+    }
+}
+
+public class AudioSystemPreviousTrackCommand : ICommand
+{
+    private readonly AudioSystem _audioSystem;
+
+    public AudioSystemPreviousTrackCommand(AudioSystem audioSystem)
+    {
+        _audioSystem = audioSystem;
+    }
+
+    public void Execute()
+    {
+        _audioSystem.PreviousTrack();
+    }
+
+    public void Undo()
+    {
+        _audioSystem.NextTrack();
+    }
+}
+
+public class AudioSystem
+{
+    private int _volume = 5;
+    private int _currentTrack = 1;
+
+    public void On()
+    {
+        Console.WriteLine("The audio system is on");
+    }
+
+    public void Off()
+    {
+        Console.WriteLine("The audio system is off");
+    }
+
+    public void VolumeUp()
+    {
+        if (_volume < 10)
+        {
+            _volume++;
+            Console.WriteLine($"Volume is now at {_volume}");
+        }
+        else
+        {
+            Console.WriteLine("Volume is at maximum");
+        }
+    }
+
+    public void VolumeDown()
+    {
+        if (_volume > 0)
+        {
+            _volume--;
+            Console.WriteLine($"Volume is now at {_volume}");
+        }
+        else
+        {
+            Console.WriteLine("Volume is at minimum");
+        }
+    }
+
+    public void NextTrack()
+    {
+        _currentTrack++;
+        Console.WriteLine($"Playing track {_currentTrack}");
+    }
+
+    public void PreviousTrack()
+    {
+        if (_currentTrack > 1)
+        {
+            _currentTrack--;
+            Console.WriteLine($"Playing track {_currentTrack}");
+        }
+        else
+        {
+            Console.WriteLine("Already on the first track");
+        }
+    }
+}
+
 
 public class RemoteControl
 {
@@ -220,8 +498,15 @@ public class RemoteControl
 
     public void UndoCommand()
     {
-        ICommand command = _commandHistory.Pop();
-        command.Undo();
+        if (_commandHistory.Count > 0)
+        {
+            ICommand command = _commandHistory.Pop();
+            command.Undo();
+        }
+        else
+        {
+            Console.WriteLine("No commands to undo.");
+        }
     }
 }
 
@@ -250,14 +535,60 @@ public class Program
 
         // REMOTE CONTROL
         var livingRoomLight = new Light();
+        var fan = new Fan();
+        var garageDoor = new GarageDoor();
+        var audioSystem = new AudioSystem();
         var remoteControl = new RemoteControl();
         
         ICommand lightOn = new LightOnCommand(livingRoomLight);
         ICommand lightOff = new LightOffCommand(livingRoomLight);
 
+        ICommand fanOn = new FanOnCommand(fan);
+        ICommand fanOff = new FanOffCommand(fan);
+
+        ICommand garageDoorOpen = new GarageDoorOpenCommand(garageDoor);
+        ICommand garageDoorClose = new GarageDoorCloseCommand(garageDoor);
+
+        ICommand audioOn = new AudioSystemOnCommand(audioSystem);
+        ICommand audioOff = new AudioSystemOffCommand(audioSystem);
+        ICommand volumeUp = new AudioSystemVolumeUpCommand(audioSystem);
+        ICommand volumeDown = new AudioSystemVolumeDownCommand(audioSystem);
+        ICommand nextTrack = new AudioSystemNextTrackCommand(audioSystem);
+        ICommand previousTrack = new AudioSystemPreviousTrackCommand(audioSystem);
+
         remoteControl.ExecuteCommand(lightOn);
         remoteControl.UndoCommand();
         remoteControl.ExecuteCommand(lightOff);
         remoteControl.UndoCommand();
+
+        
+        remoteControl.ExecuteCommand(fanOn);
+        remoteControl.UndoCommand();
+        remoteControl.ExecuteCommand(fanOff);
+        remoteControl.UndoCommand();
+
+        remoteControl.ExecuteCommand(garageDoorOpen);
+        remoteControl.UndoCommand();
+        remoteControl.ExecuteCommand(garageDoorClose);
+        remoteControl.UndoCommand();
+
+        Console.WriteLine("Audio Example.");
+        remoteControl.ExecuteCommand(audioOn);
+        Console.WriteLine("Volume Up here.");
+        remoteControl.ExecuteCommand(volumeUp);
+        Console.WriteLine("Next track here.");
+        remoteControl.ExecuteCommand(nextTrack);
+        Console.WriteLine("Undo here.");
+        remoteControl.UndoCommand(); 
+        Console.WriteLine("Previous track here.");
+        remoteControl.ExecuteCommand(previousTrack);
+        Console.WriteLine("Undo here.");
+        remoteControl.UndoCommand(); 
+        Console.WriteLine("Volume Down here.");
+        remoteControl.ExecuteCommand(volumeDown);
+        Console.WriteLine("Undo here.");
+        remoteControl.UndoCommand();
+        remoteControl.ExecuteCommand(audioOff);
     }
+}
 }
