@@ -1,5 +1,4 @@
-﻿namespace Command
-{
+﻿namespace Command;
 
 /// <summary>
 /// Command
@@ -590,5 +589,4 @@ public class Program
         remoteControl.UndoCommand();
         remoteControl.ExecuteCommand(audioOff);
     }
-}
 }
