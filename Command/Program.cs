@@ -1,4 +1,11 @@
-﻿namespace Command;
+﻿using Command.Commands.FanCommands;
+using Command.Commands.GarageDoorCommands;
+using Command.Commands.Interfaces;
+using Command.Commands.LightCommands;
+using Command.Invokers;
+using Command.Receivers;
+
+namespace Command;
 
 /// <summary>
 /// Command
@@ -129,102 +136,7 @@
 //    }
 //}
 
-public interface ICommand
-{
-    void Execute();
-
-    void Undo();
-}
-
-public class LightOnCommand : ICommand
-{
-    private readonly Light _light;
-
-    public LightOnCommand(Light light)
-    {
-        _light = light;
-    }
-
-    public void Execute()
-    {
-        _light.On();
-    }
-
-    public void Undo()
-    {
-        _light.Off();
-    }
-}
-
-public class LightOffCommand : ICommand
-{
-    private readonly Light _light;
-
-    public LightOffCommand(Light light)
-    {
-        _light = light;
-    }
-
-    public void Execute()
-    {
-        _light.Off();
-    }
-
-    public void Undo()
-    {
-        _light.On();
-    }
-}
-
-public class Light
-{
-    public void On()
-    {
-        Console.WriteLine("The light is on");
-    }
-
-    public void Off()
-    {
-        Console.WriteLine("The light is off");
-    }
-}
-
-public class Fan
-{
-    // On
-    // Off
-}
-
-public class GarageDoor
-{
-    // Open
-    // Close
-}
-
-// OTRO APARATO QUE IMPLEMENTE ICommand
-
-public class RemoteControl
-{
-    private readonly Stack<ICommand> _commandHistory;
-
-    public RemoteControl()
-    {
-        _commandHistory = new Stack<ICommand>();
-    }
-
-    public void ExecuteCommand(ICommand command)
-    {
-        command.Execute();
-        _commandHistory.Push(command);
-    }
-
-    public void UndoCommand()
-    {
-        ICommand command = _commandHistory.Pop();
-        command.Undo();
-    }
-}
-
+// Client
 public class Program
 {
     public static void Main()
@@ -248,16 +160,72 @@ public class Program
         //invoker.ExecuteCommand(writeWorld);
         //invoker.UndoCommand();
 
+
         // REMOTE CONTROL
+        // Crear el receptor
         var livingRoomLight = new Light();
+        // Crear el invocador
         var remoteControl = new RemoteControl();
         
+
+        //// LIGHT
+        
+        // Crear los comandos
         ICommand lightOn = new LightOnCommand(livingRoomLight);
         ICommand lightOff = new LightOffCommand(livingRoomLight);
 
-        remoteControl.ExecuteCommand(lightOn);
-        remoteControl.UndoCommand();
-        remoteControl.ExecuteCommand(lightOff);
-        remoteControl.UndoCommand();
+        // Ejecutar comandos y guardarlos en el historial
+        remoteControl.ExecuteCommand(lightOn); // Output: Light is On
+        // Deshacer el comando
+        remoteControl.UndoCommand(); // Output: Light is Off
+        remoteControl.ExecuteCommand(lightOff); // Output: Light is Off
+
+        // Deshacer el otro comando
+        remoteControl.UndoCommand(); // Output: Light is On
+
+        // Intentar deshacer cuando no hay más comandos
+        remoteControl.UndoCommand(); // Output: No commands to undo
+
+
+        //// FAN
+        
+        // Crear el receptor
+        var bedroomFan = new Fan();
+        // Crear los comandos
+        ICommand fanOn = new FanOnCommand(bedroomFan);
+        ICommand fanOff = new FanOffCommand(bedroomFan);
+
+        // Ejecutar comandos y guardarlos en el historial
+        remoteControl.ExecuteCommand(fanOn); // Output: Fan is On
+        // Deshacer el comando
+        remoteControl.UndoCommand(); // Output: Fan is Off
+        remoteControl.ExecuteCommand(fanOff); // Output: Fan is Off
+
+        // Deshacer el otro comando
+        remoteControl.UndoCommand(); // Output: Fan is On
+
+        // Intentar deshacer cuando no hay más comandos
+        remoteControl.UndoCommand(); // Output: No commands to undo
+
+
+        /// GARAGE DOOR
+
+        // Crear el receptor
+        var garageDoor = new GarageDoor();
+        // Crear los comandos
+        ICommand garageDoorOpen = new GarageDoorOpenCommand(garageDoor);
+        ICommand garageDoorClose = new GarageDoorCloseCommand(garageDoor);
+
+        // Ejecutar comandos y guardarlos en el historial
+        remoteControl.ExecuteCommand(garageDoorOpen); // Output: Garage Door is Open
+        // Deshacer el comando
+        remoteControl.UndoCommand(); // Output: Garage Door is clode
+        remoteControl.ExecuteCommand(garageDoorClose); // Output: Garage Door is close
+
+        // Deshacer el otro comando
+        remoteControl.UndoCommand(); // Output: Garage Door is Open
+
+        // Intentar deshacer cuando no hay más comandos
+        remoteControl.UndoCommand(); // Output: No commands to undo
     }
 }
