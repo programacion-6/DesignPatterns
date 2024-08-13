@@ -189,20 +189,104 @@ public class Light
     }
 }
 
-public class Fan
+public class FanOFFCommand : ICommand
 {
-    // On
-    // Off
+    private readonly Fan _fan;
+
+    public FanOFFCommand (Fan fan) 
+    {
+        _fan = fan;
+    }
+    public void Execute()
+    {
+        _fan.Off();
+    }
+
+    public void Undo()
+    {
+        _fan.On();
+    }
 }
 
-public class GarageDoor
+public class Fan 
 {
-    // Open
-    // Close
+    public void On()
+    {
+        Console.WriteLine("The light is on");
+    }
+
+    public void Off()
+    {
+        Console.WriteLine("The light is off");
+    }
 }
 
-// OTRO APARATO QUE IMPLEMENTE ICommand
 
+public class GarageCloseCommand : ICommand
+{
+    private readonly GarageDoor _garage;
+
+    public GarageCloseCommand (GarageDoor garage) 
+    {
+        _garage = garage;
+    }
+    public void Execute()
+    {
+        _garage.Close();
+    }
+
+    public void Undo()
+    {
+        _garage.Open();
+    }
+}
+
+public class GarageDoor 
+{
+    public void Open()
+    {
+        Console.WriteLine("The garage door is open");
+    }
+
+    public void Close()
+    {
+        Console.WriteLine("The garage door is closed");
+    }
+}
+
+
+public class EngineOFFCommand : ICommand
+{
+
+    private readonly Engine _engine;
+
+    public EngineOFFCommand(Engine engine)
+    {
+        _engine = engine;
+    }
+    public void Execute()
+    {
+        _engine.Off();
+    }
+
+    public void Undo()
+    {
+        _engine.On();
+    }
+}
+
+public class Engine  
+{
+    public void On()
+    {
+        Console.WriteLine("The Engine is on");
+    }
+
+    public void Off()
+    {
+        Console.WriteLine("The Engine is off");
+    }
+}
 public class RemoteControl
 {
     private readonly Stack<ICommand> _commandHistory;
@@ -251,13 +335,21 @@ public class Program
         // REMOTE CONTROL
         var livingRoomLight = new Light();
         var remoteControl = new RemoteControl();
+        var engineControl = new Engine();
         
         ICommand lightOn = new LightOnCommand(livingRoomLight);
         ICommand lightOff = new LightOffCommand(livingRoomLight);
 
+        ICommand engineOn = new EngineOFFCommand(engineControl);
+        ICommand engineOff = new EngineOFFCommand(engineControl);
+
         remoteControl.ExecuteCommand(lightOn);
         remoteControl.UndoCommand();
         remoteControl.ExecuteCommand(lightOff);
+        remoteControl.UndoCommand();
+        remoteControl.ExecuteCommand(engineOn);
+        remoteControl.UndoCommand();
+        remoteControl.ExecuteCommand(engineOff);
         remoteControl.UndoCommand();
     }
 }
