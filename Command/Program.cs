@@ -1,4 +1,6 @@
-﻿namespace Command;
+﻿using System.Net.Http.Headers;
+
+namespace Command;
 
 /// <summary>
 /// Command
@@ -188,20 +190,195 @@ public class Light
         Console.WriteLine("The light is off");
     }
 }
+public class FanOffCommand : ICommand
+{
+    private readonly Fan _fan;
+    public FanOffCommand(Fan fan){
+        _fan = fan;
+    }
+public void Execute()
+    {
+        _fan.Off();
+    }
+
+    public void Undo()
+    {
+        _fan.On();
+    }
+}
+
+public class FanOnCommand : ICommand
+{
+    private readonly Fan _fan;
+    public FanOnCommand(Fan fan)
+    {
+        _fan = fan;
+    }
+    public void Execute()
+    {
+        _fan.On();
+    }
+
+    public void Undo()
+    {
+        _fan.Off();
+    }
+}
 
 public class Fan
 {
-    // On
-    // Off
+    public void On()
+    {
+        Console.WriteLine("I guess the Fan is on now.");
+    }
+    public void Off()
+    {
+        Console.WriteLine("What? Do you expect something else? Yes yes the hecking Fan is off now.");
+    }
+    
 }
 
+public class GarageDoorOnCommand : ICommand
+{
+    private readonly GarageDoor _garageDoor;
+    public GarageDoorOnCommand(GarageDoor garageDoor)
+    {
+        _garageDoor =  garageDoor;
+    }
+    public void Execute()
+    {
+        _garageDoor.On();
+    }
+
+    public void Undo()
+    {
+        _garageDoor.Off();
+    }
+}
+public class GarageDoorOffCommand : ICommand
+{
+    private readonly GarageDoor _garageDoor;
+    public GarageDoorOffCommand(GarageDoor garageDoor)
+    {
+        _garageDoor =  garageDoor;
+    }
+    public void Execute()
+    {
+        _garageDoor.Off();
+    }
+
+    public void Undo()
+    {
+        _garageDoor.On();
+    }
+}
 public class GarageDoor
 {
-    // Open
-    // Close
+    public void On()
+    {
+        Console.WriteLine("Wait, something stopped the door, ok it's done now.");
+    }
+    public void Off()
+    {
+        Console.WriteLine("Another battery and should do, yep it's closing, and it's closed.");
+    }
 }
 
 // OTRO APARATO QUE IMPLEMENTE ICommand
+public class KillingMachineOnCommand : ICommand
+{
+    private readonly KillingMachine _machine;
+    public KillingMachineOnCommand(KillingMachine machine)
+    {
+        _machine = machine;
+    }
+     public void Execute()
+    {
+        _machine.On();
+    }
+
+    public void Undo()
+    {
+        _machine.Off();
+    }
+}
+
+public class KillingMachineOffCommand : ICommand
+{
+    private readonly KillingMachine _machine;
+    public KillingMachineOffCommand(KillingMachine machine)
+    {
+        _machine = machine;
+    }
+     public void Execute()
+    {
+        _machine.Off();
+    }
+
+    public void Undo()
+    {
+        _machine.On();
+    }
+}
+
+public class KillingMachineScoutTargetsCommand : ICommand
+{
+    private readonly KillingMachine _machine;
+    public KillingMachineScoutTargetsCommand(KillingMachine machine)
+    {
+        _machine = machine;
+    }
+     public void Execute()
+    {
+        _machine.ScoutTargets();
+    }
+
+    public void Undo()
+    {
+        _machine.StopCurrentOperation();
+    }
+}
+
+public class KillingMachineKillTargetsCommand : ICommand
+{
+    private readonly KillingMachine _machine;
+    public KillingMachineKillTargetsCommand(KillingMachine machine)
+    {
+        _machine = machine;
+    }
+     public void Execute()
+    {
+        _machine.KillTargets();
+    }
+
+    public void Undo()
+    {
+        _machine.StopCurrentOperation();
+    }
+}
+public class KillingMachine 
+{
+    public void On()
+    {
+        Console.WriteLine("System operational, ready for duty");
+    }
+    public void Off()
+    {
+        Console.WriteLine("System shutting down, recovering power.");
+    }
+    public void ScoutTargets()
+    {
+        Console.WriteLine("Command confirmed, following enemies without being detected.");
+    }
+    public void KillTargets()
+    {
+        Console.WriteLine("Command confirmed, proceeding to murder protocols.");
+    }
+    public void StopCurrentOperation()
+    {
+        Console.WriteLine("Command canceled, waiting next command.");
+    }
+}
 
 public class RemoteControl
 {
@@ -249,15 +426,37 @@ public class Program
         //invoker.UndoCommand();
 
         // REMOTE CONTROL
-        var livingRoomLight = new Light();
+        
         var remoteControl = new RemoteControl();
         
+        var livingRoomLight = new Light();
         ICommand lightOn = new LightOnCommand(livingRoomLight);
         ICommand lightOff = new LightOffCommand(livingRoomLight);
+
+        var fan = new Fan();
+        ICommand fanOn = new FanOnCommand(fan);
+        ICommand fanOff = new FanOffCommand(fan);
+
+        var garage = new GarageDoor();
+        ICommand garageDoorOn = new GarageDoorOnCommand(garage);
+        ICommand garageDoorOff = new GarageDoorOffCommand(garage);
+
+        var killingMachine = new KillingMachine();
+        ICommand killingMachineOn = new KillingMachineOnCommand(killingMachine);
+        ICommand killingMachineOff = new KillingMachineOffCommand(killingMachine);
+        ICommand killingMachineScout = new KillingMachineScoutTargetsCommand(killingMachine);
+        ICommand killingMachineKill = new KillingMachineKillTargetsCommand(killingMachine);
 
         remoteControl.ExecuteCommand(lightOn);
         remoteControl.UndoCommand();
         remoteControl.ExecuteCommand(lightOff);
+        remoteControl.UndoCommand();
+
+        //Killing machine commands
+        remoteControl.ExecuteCommand(killingMachineOn);
+        remoteControl.ExecuteCommand(killingMachineScout);
+        remoteControl.UndoCommand();
+        remoteControl.ExecuteCommand(killingMachineKill);
         remoteControl.UndoCommand();
     }
 }
