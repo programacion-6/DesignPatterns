@@ -129,13 +129,6 @@
 //    }
 //}
 
-public interface ICommand
-{
-    void Execute();
-
-    void Undo();
-}
-
 public class LightOnCommand : ICommand
 {
     private readonly Light _light;
@@ -189,41 +182,7 @@ public class Light
     }
 }
 
-public class Fan
-{
-    // On
-    // Off
-}
-
-public class GarageDoor
-{
-    // Open
-    // Close
-}
-
 // OTRO APARATO QUE IMPLEMENTE ICommand
-
-public class RemoteControl
-{
-    private readonly Stack<ICommand> _commandHistory;
-
-    public RemoteControl()
-    {
-        _commandHistory = new Stack<ICommand>();
-    }
-
-    public void ExecuteCommand(ICommand command)
-    {
-        command.Execute();
-        _commandHistory.Push(command);
-    }
-
-    public void UndoCommand()
-    {
-        ICommand command = _commandHistory.Pop();
-        command.Undo();
-    }
-}
 
 public class Program
 {
@@ -250,14 +209,26 @@ public class Program
 
         // REMOTE CONTROL
         var livingRoomLight = new Light();
+        var roomFan = new Fan();
+        var garageDoor = new GarageDoor();
         var remoteControl = new RemoteControl();
         
         ICommand lightOn = new LightOnCommand(livingRoomLight);
         ICommand lightOff = new LightOffCommand(livingRoomLight);
+        ICommand fanOn = new FanOnCommand(roomFan);
+        ICommand fanOff = new FanOffCommand(roomFan);
+        ICommand garageDoorOn = new GarageDoorOnCommand(garageDoor);
+        ICommand garageDoorOff = new GarageDoorOffCommand(garageDoor);
 
         remoteControl.ExecuteCommand(lightOn);
         remoteControl.UndoCommand();
         remoteControl.ExecuteCommand(lightOff);
+        remoteControl.UndoCommand();
+
+        remoteControl.ExecuteCommand(fanOn);
+        remoteControl.ExecuteCommand(fanOff);
+        remoteControl.ExecuteCommand(garageDoorOn);
+        remoteControl.ExecuteCommand(garageDoorOff);
         remoteControl.UndoCommand();
     }
 }
