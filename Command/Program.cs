@@ -1,4 +1,9 @@
-﻿namespace Command;
+﻿using Command.Commands;
+using Command.Receivers;
+using Command.Invokers;
+using Command.interfaces;
+
+namespace Command;
 
 /// <summary>
 /// Command
@@ -129,135 +134,41 @@
 //    }
 //}
 
-public interface ICommand
-{
-    void Execute();
-
-    void Undo();
-}
-
-public class LightOnCommand : ICommand
-{
-    private readonly Light _light;
-
-    public LightOnCommand(Light light)
-    {
-        _light = light;
-    }
-
-    public void Execute()
-    {
-        _light.On();
-    }
-
-    public void Undo()
-    {
-        _light.Off();
-    }
-}
-
-public class LightOffCommand : ICommand
-{
-    private readonly Light _light;
-
-    public LightOffCommand(Light light)
-    {
-        _light = light;
-    }
-
-    public void Execute()
-    {
-        _light.Off();
-    }
-
-    public void Undo()
-    {
-        _light.On();
-    }
-}
-
-public class Light
-{
-    public void On()
-    {
-        Console.WriteLine("The light is on");
-    }
-
-    public void Off()
-    {
-        Console.WriteLine("The light is off");
-    }
-}
-
-public class Fan
-{
-    // On
-    // Off
-}
-
-public class GarageDoor
-{
-    // Open
-    // Close
-}
-
-// OTRO APARATO QUE IMPLEMENTE ICommand
-
-public class RemoteControl
-{
-    private readonly Stack<ICommand> _commandHistory;
-
-    public RemoteControl()
-    {
-        _commandHistory = new Stack<ICommand>();
-    }
-
-    public void ExecuteCommand(ICommand command)
-    {
-        command.Execute();
-        _commandHistory.Push(command);
-    }
-
-    public void UndoCommand()
-    {
-        ICommand command = _commandHistory.Pop();
-        command.Undo();
-    }
-}
-
 public class Program
 {
     public static void Main()
     {
-        // ---- WITHOUT ------
-        //var editor = new TextEditor();
-        //editor.WriteText("Hello ");
-        //editor.WriteText("World!");
-
-        //editor.UndoWrite("World!");
-
-        // ---- WITH ------
-
-        //var editor = new TextEditor();
-        //var invoker = new CommandInvoker();
-
-        //ICommand writeHello = new WriteCommand(editor, "Hello ");
-        //ICommand writeWorld = new WriteCommand(editor, "World!");
-
-        //invoker.ExecuteCommand(writeHello);
-        //invoker.ExecuteCommand(writeWorld);
-        //invoker.UndoCommand();
-
         // REMOTE CONTROL
-        var livingRoomLight = new Light();
         var remoteControl = new RemoteControl();
-        
+
+        // Light commands
+        var livingRoomLight = new Light();
         ICommand lightOn = new LightOnCommand(livingRoomLight);
         ICommand lightOff = new LightOffCommand(livingRoomLight);
 
         remoteControl.ExecuteCommand(lightOn);
         remoteControl.UndoCommand();
         remoteControl.ExecuteCommand(lightOff);
+        remoteControl.UndoCommand();
+
+        // Fan commands
+        var fan = new Fan();
+        ICommand fanOn = new FanOnCommand(fan);
+        ICommand fanOff = new FanOffCommand(fan);
+
+        remoteControl.ExecuteCommand(fanOn);
+        remoteControl.UndoCommand();
+        remoteControl.ExecuteCommand(fanOff);
+        remoteControl.UndoCommand();
+
+        // Garage door commands
+        var garageDoor = new GarageDoor();
+        ICommand garageDoorOpen = new GarageDoorOpenCommand(garageDoor);
+        ICommand garageDoorClose = new GarageDoorCloseCommand(garageDoor);
+
+        remoteControl.ExecuteCommand(garageDoorOpen);
+        remoteControl.UndoCommand();
+        remoteControl.ExecuteCommand(garageDoorClose);
         remoteControl.UndoCommand();
     }
 }
