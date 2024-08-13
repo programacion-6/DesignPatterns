@@ -1,4 +1,5 @@
 ﻿using Command.CommandInterface;
+using Command.ConcreteCommands.Fans;
 using Command.ConcreteCommands.Lights;
 using Command.Invoker;
 using Command.Receivers;
@@ -158,6 +159,7 @@ public class Program
         //invoker.UndoCommand();
 
         // REMOTE CONTROL
+        Console.WriteLine("--LIGHTS--");
         var livingRoomLight = new Light();
         var remoteControl = new RemoteControl();
         
@@ -167,6 +169,17 @@ public class Program
         remoteControl.ExecuteCommand(lightOn);
         remoteControl.UndoCommand();
         remoteControl.ExecuteCommand(lightOff);
+        remoteControl.UndoCommand();
+
+        Console.WriteLine("--FANS--");
+        var diningRoomFan = new Fan();
+        
+        ICommand fanOn = new FanOnCommand(diningRoomFan);
+        ICommand fanOff = new FanOffCommand(diningRoomFan);
+
+        remoteControl.ExecuteCommand(fanOn);
+        remoteControl.UndoCommand();
+        remoteControl.ExecuteCommand(fanOff);
         remoteControl.UndoCommand();
     }
 }
