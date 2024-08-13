@@ -1,4 +1,9 @@
-﻿namespace Command;
+﻿using Command.CommandInterface;
+using Command.ConcreteCommands.Lights;
+using Command.Invoker;
+using Command.Receivers;
+
+namespace Command;
 
 /// <summary>
 /// Command
@@ -128,102 +133,6 @@
 //        }
 //    }
 //}
-
-public interface ICommand
-{
-    void Execute();
-
-    void Undo();
-}
-
-public class LightOnCommand : ICommand
-{
-    private readonly Light _light;
-
-    public LightOnCommand(Light light)
-    {
-        _light = light;
-    }
-
-    public void Execute()
-    {
-        _light.On();
-    }
-
-    public void Undo()
-    {
-        _light.Off();
-    }
-}
-
-public class LightOffCommand : ICommand
-{
-    private readonly Light _light;
-
-    public LightOffCommand(Light light)
-    {
-        _light = light;
-    }
-
-    public void Execute()
-    {
-        _light.Off();
-    }
-
-    public void Undo()
-    {
-        _light.On();
-    }
-}
-
-public class Light
-{
-    public void On()
-    {
-        Console.WriteLine("The light is on");
-    }
-
-    public void Off()
-    {
-        Console.WriteLine("The light is off");
-    }
-}
-
-public class Fan
-{
-    // On
-    // Off
-}
-
-public class GarageDoor
-{
-    // Open
-    // Close
-}
-
-// OTRO APARATO QUE IMPLEMENTE ICommand
-
-public class RemoteControl
-{
-    private readonly Stack<ICommand> _commandHistory;
-
-    public RemoteControl()
-    {
-        _commandHistory = new Stack<ICommand>();
-    }
-
-    public void ExecuteCommand(ICommand command)
-    {
-        command.Execute();
-        _commandHistory.Push(command);
-    }
-
-    public void UndoCommand()
-    {
-        ICommand command = _commandHistory.Pop();
-        command.Undo();
-    }
-}
 
 public class Program
 {
