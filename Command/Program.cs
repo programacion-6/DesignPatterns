@@ -479,7 +479,6 @@ public class AudioSystem
     }
 }
 
-
 public class RemoteControl
 {
     private readonly Stack<ICommand> _commandHistory;
@@ -559,7 +558,6 @@ public class Program
         remoteControl.UndoCommand();
         remoteControl.ExecuteCommand(lightOff);
         remoteControl.UndoCommand();
-
         
         remoteControl.ExecuteCommand(fanOn);
         remoteControl.UndoCommand();
