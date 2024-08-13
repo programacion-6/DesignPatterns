@@ -1,4 +1,12 @@
-﻿﻿namespace Command;
+﻿namespace Command;
+
+using Command.Components.Concrets.Light;
+using Command.Components.Concrets.Fan;
+using Command.Components.Concrets.GarageDoor;
+using Command.Components.Concrets.WashingMachine;
+using Command.Components.Receivers;
+using Command.Components.Interfaces;
+using Command.Components.Invokers;
 
 /// <summary>
 /// Command
@@ -128,173 +136,6 @@
 //        }
 //    }
 //}
-
-public interface ICommand
-{
-    void Execute();
-
-    void Undo();
-}
-
-public class LightOnCommand : ICommand
-{
-    private readonly Light _light;
-
-    public LightOnCommand(Light light)
-    {
-        _light = light;
-    }
-
-    public void Execute()
-    {
-        _light.On();
-    }
-
-    public void Undo()
-    {
-        _light.Off();
-    }
-}
-
-public class LightOffCommand : ICommand
-{
-    private readonly Light _light;
-
-    public LightOffCommand(Light light)
-    {
-        _light = light;
-    }
-
-    public void Execute()
-    {
-        _light.Off();
-    }
-
-    public void Undo()
-    {
-        _light.On();
-    }
-}
-
-public class Light
-{
-    public void On()
-    {
-        Console.WriteLine("The light is on");
-    }
-
-    public void Off()
-    {
-        Console.WriteLine("The light is off");
-    }
-}
-
-public class FanOnCommand : ICommand
-{
-    private readonly Fan _fan;
-
-    public FanOnCommand(Fan fan)
-    {
-        _fan = fan;
-    }
-
-    public void Execute()
-    {
-        _fan.On();
-    }
-
-    public void Undo()
-    {
-        _fan.Off();
-    }
-}
-
-public class FanOffCommand : ICommand
-{
-    private readonly Fan _fan;
-
-    public FanOffCommand(Fan fan)
-    {
-        _fan = fan;
-    }
-
-    public void Execute()
-    {
-        _fan.Off();
-    }
-
-    public void Undo()
-    {
-        _fan.On();
-    }
-}
-
-public class Fan
-{
-    public void On()
-    {
-        Console.WriteLine("The fan is on");
-    }
-
-    public void Off()
-    {
-        Console.WriteLine("The fan is off");
-    }
-}
-
-
-public class GarageDoorOpenCommand : ICommand
-{
-    private readonly GarageDoor _garageDoor;
-
-    public GarageDoorOpenCommand(GarageDoor garageDoor)
-    {
-        _garageDoor = garageDoor;
-    }
-
-    public void Execute()
-    {
-        _garageDoor.Open();
-    }
-
-    public void Undo()
-    {
-        _garageDoor.Close();
-    }
-}
-
-public class GarageDoorCloseCommand : ICommand
-{
-    private readonly GarageDoor _garageDoor;
-
-    public GarageDoorCloseCommand(GarageDoor garageDoor)
-    {
-        _garageDoor = garageDoor;
-    }
-
-    public void Execute()
-    {
-        _garageDoor.Close();
-    }
-
-    public void Undo()
-    {
-        _garageDoor.Open();
-    }
-}
-
-public class GarageDoor
-{
-    public void Open()
-    {
-        Console.WriteLine("The garage door is open");
-    }
-
-    public void Close()
-    {
-        Console.WriteLine("The garage door is closed");
-    }
-}
 
 // OTRO APARATO QUE IMPLEMENTE ICommand
 
@@ -479,36 +320,6 @@ public class AudioSystem
     }
 }
 
-
-public class RemoteControl
-{
-    private readonly Stack<ICommand> _commandHistory;
-
-    public RemoteControl()
-    {
-        _commandHistory = new Stack<ICommand>();
-    }
-
-    public void ExecuteCommand(ICommand command)
-    {
-        command.Execute();
-        _commandHistory.Push(command);
-    }
-
-    public void UndoCommand()
-    {
-        if (_commandHistory.Count > 0)
-        {
-            ICommand command = _commandHistory.Pop();
-            command.Undo();
-        }
-        else
-        {
-            Console.WriteLine("No commands to undo.");
-        }
-    }
-}
-
 public class Program
 {
     public static void Main()
@@ -542,12 +353,14 @@ public class Program
         ICommand lightOn = new LightOnCommand(livingRoomLight);
         ICommand lightOff = new LightOffCommand(livingRoomLight);
 
-        ICommand fanOn = new FanOnCommand(fan);
-        ICommand fanOff = new FanOffCommand(fan);
+        // Fan Device
+        ICommand onCommand = new FanOnCommand(fan);
+        ICommand offCommand = new FanOffCommand(fan);
 
-        ICommand garageDoorOpen = new GarageDoorOpenCommand(garageDoor);
-        ICommand garageDoorClose = new GarageDoorCloseCommand(garageDoor);
-
+        // Garage Door Device
+        ICommand openCommand = new GarageDoorOpenCommand(garageDoor);
+        ICommand closeCommand = new GarageDoorCloseCommand(garageDoor);
+        
         ICommand audioOn = new AudioSystemOnCommand(audioSystem);
         ICommand audioOff = new AudioSystemOffCommand(audioSystem);
         ICommand volumeUp = new AudioSystemVolumeUpCommand(audioSystem);
@@ -560,15 +373,17 @@ public class Program
         remoteControl.ExecuteCommand(lightOff);
         remoteControl.UndoCommand();
 
-        
-        remoteControl.ExecuteCommand(fanOn);
+        // Completing Devices
+        // Fan Device
+        remoteControl.ExecuteCommand(onCommand);
         remoteControl.UndoCommand();
-        remoteControl.ExecuteCommand(fanOff);
+        remoteControl.ExecuteCommand(offCommand);
         remoteControl.UndoCommand();
 
-        remoteControl.ExecuteCommand(garageDoorOpen);
+        // Garage Door Device
+        remoteControl.ExecuteCommand(openCommand);
         remoteControl.UndoCommand();
-        remoteControl.ExecuteCommand(garageDoorClose);
+        remoteControl.ExecuteCommand(closeCommand);
         remoteControl.UndoCommand();
 
         Console.WriteLine("Audio Example.");
@@ -588,5 +403,37 @@ public class Program
         Console.WriteLine("Undo here.");
         remoteControl.UndoCommand();
         remoteControl.ExecuteCommand(audioOff);
+
+        // Adding "Washing Machine" Device using Command
+        var washingMachine = new WashingMachine();
+
+        ICommand startCommand = new StartCommand(washingMachine);
+        ICommand stopCommand = new StopCommand(washingMachine);
+        ICommand pauseCommand = new PauseCommand(washingMachine);
+        ICommand setModeCommand = new SetModeCommand(washingMachine, "Fuzzy");
+
+        // Starting the washing machine
+        remoteControl.ExecuteCommand(startCommand);
+        // Undo the last operation 
+        // (Start -> Stop)
+        remoteControl.UndoCommand();
+
+        // Pausing the washing machine
+        remoteControl.ExecuteCommand(pauseCommand);
+        // Undo the last operation 
+        // (Pause -> Start)
+        remoteControl.UndoCommand();
+
+        // Setting the washing mode to Fuzzy
+        remoteControl.ExecuteCommand(setModeCommand);
+        // Undo the last operation
+        // (Pause to set a Mode -> Start)
+        remoteControl.ExecuteCommand(startCommand);
+
+        // Stopping the washing machine
+        remoteControl.ExecuteCommand(stopCommand);
+        // Undo the last operation 
+        // (Stop -> Start)
+        remoteControl.UndoCommand();
     }
 }
