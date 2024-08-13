@@ -1,14 +1,14 @@
 namespace Command.src.Receivers;
 
-public class Ligth
+public class Light
 {
     public void On()
     {
-        Console.WriteLine("Ligth is on");
+        Console.WriteLine("Light is on");
     }
 
     public void Off()
     {
-        Console.WriteLine("Ligth is off");
+        Console.WriteLine("Light is off");
     }
 }
