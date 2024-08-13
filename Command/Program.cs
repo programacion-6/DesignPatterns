@@ -191,17 +191,164 @@ public class Light
 
 public class Fan
 {
-    // On
-    // Off
+    public void On()
+    {
+        Console.WriteLine("The Fan is on");    
+    }
+    
+    public void Off()
+    {
+        Console.WriteLine("The Fan is Off");
+    }
 }
+
+public class FanOnCommand : ICommand
+{
+    private readonly Fan _fan;
+
+    public FanOnCommand(Fan fan)
+    {
+        _fan = fan;
+    }
+
+    public void Execute()
+    {
+        _fan.On();
+    }
+
+    public void Undo()
+    {
+        _fan.Off();
+    }
+}
+
+public class FanOffCommand : ICommand
+{
+    private readonly Fan _fan;
+
+    public FanOffCommand(Fan fan)
+    {
+        _fan = fan;
+    }
+
+    public void Execute()
+    {
+        _fan.Off();
+    }
+
+    public void Undo()
+    {
+        _fan.On();
+    }
+}
+
+
 
 public class GarageDoor
 {
-    // Open
-    // Close
+    public void Open()
+    {
+        Console.WriteLine("The garage door is open");
+    }
+
+    public void Close()
+    {
+        Console.WriteLine("The garage door is closed");
+    }
 }
 
-// OTRO APARATO QUE IMPLEMENTE ICommand
+public class GarageDoorOpenCommand : ICommand
+{
+    private readonly GarageDoor _garageDoor;
+
+    public GarageDoorOpenCommand(GarageDoor garageDoor)
+    {
+        _garageDoor = garageDoor;
+    }
+
+    public void Execute()
+    {
+        _garageDoor.Open();
+    }
+
+    public void Undo()
+    {
+        _garageDoor.Close();
+    }
+}
+
+public class GarageDoorCloseCommand : ICommand
+{
+    private readonly GarageDoor _garageDoor;
+
+    public GarageDoorCloseCommand(GarageDoor garageDoor)
+    {
+        _garageDoor = garageDoor;
+    }
+
+    public void Execute()
+    {
+        _garageDoor.Close();
+    }
+
+    public void Undo()
+    {
+        _garageDoor.Open();
+    }
+}
+
+
+public class Stereo{
+    public void On()
+    {
+        Console.WriteLine("The stereo is on");
+    }
+
+    public void Off()
+    {
+        Console.WriteLine("The stereo is off");
+    }
+}
+
+public class StereoOnCommand : ICommand
+{
+    private readonly Stereo _stereo;
+
+    public StereoOnCommand(Stereo stereo)
+    {
+        _stereo = stereo;
+    }
+
+    public void Execute()
+    {
+        _stereo.On();
+    }
+
+    public void Undo()
+    {
+        _stereo.Off();
+    }
+}
+
+public class StereoOffCommand : ICommand
+{
+    private readonly Stereo _stereo;
+
+    public StereoOffCommand(Stereo stereo)
+    {
+        _stereo = stereo;
+    }
+
+    public void Execute()
+    {
+        _stereo.Off();
+    }
+
+    public void Undo()
+    {
+        _stereo.On();
+    }
+}
 
 public class RemoteControl
 {
@@ -250,14 +397,43 @@ public class Program
 
         // REMOTE CONTROL
         var livingRoomLight = new Light();
+        var livingRoomFan = new Fan();
+        var garageDoor = new GarageDoor();
+        var stereo = new Stereo();
+
         var remoteControl = new RemoteControl();
+
         
         ICommand lightOn = new LightOnCommand(livingRoomLight);
         ICommand lightOff = new LightOffCommand(livingRoomLight);
 
+        ICommand fanOn = new FanOnCommand(livingRoomFan);
+        ICommand fanOff = new FanOffCommand(livingRoomFan);
+
+        ICommand garageDoorOpen = new GarageDoorOpenCommand(garageDoor);
+        ICommand garageDoorClose = new GarageDoorCloseCommand(garageDoor);
+
+        ICommand stereoOn = new StereoOnCommand(stereo);
+        ICommand stereoOff = new StereoOffCommand(stereo);
+
         remoteControl.ExecuteCommand(lightOn);
         remoteControl.UndoCommand();
+
         remoteControl.ExecuteCommand(lightOff);
         remoteControl.UndoCommand();
+
+        remoteControl.ExecuteCommand(fanOn);
+        remoteControl.UndoCommand();
+
+        remoteControl.ExecuteCommand(garageDoorOpen);
+        remoteControl.UndoCommand();
+
+        remoteControl.ExecuteCommand(stereoOn);
+        remoteControl.UndoCommand();
+
+        remoteControl.ExecuteCommand(lightOff);
+        remoteControl.ExecuteCommand(fanOff);
+        remoteControl.ExecuteCommand(garageDoorClose);
+        remoteControl.ExecuteCommand(stereoOff);
     }
 }
