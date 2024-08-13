@@ -140,6 +140,7 @@ public class Program
     {
         // REMOTE CONTROL
         var remoteControl = new RemoteControl();
+
         // Light commands
         var livingRoomLight = new Light();
         ICommand lightOn = new LightOnCommand(livingRoomLight);
